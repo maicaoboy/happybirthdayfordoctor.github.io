@@ -9,66 +9,108 @@
     <link rel="apple-touch-icon" href="doctor.png">
     
     <style>
-        /* CSS 样式: 让页面变得好看 */
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #fce4ec; /* 一个温馨的粉色背景 */
+            background-color: #fce4ec; /* 温馨的粉色背景 */
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden; /* 防止页面滚动 */
+            cursor: pointer;
         }
 
         .gift-container {
             text-align: center;
-            padding: 20px;
+            position: relative; /* 关键：作为所有特效的定位锚点 */
+            display: inline-block;
         }
 
         #doctor-icon {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%; /* 圆形 */
-            object-fit: cover;
-            border: 4px solid #fff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            /* 1. 尺寸：90%的屏幕短边 */
+            width: 90vmin;
+            height: 90vmin;
             
-            /* 关键：让点击有反馈 */
-            cursor: pointer;
-            transition: transform 0.1s ease;
+            object-fit: cover; 
+            /* 2. 移除所有边框 */
+            /* border: 4px solid #fff; (已移除) */
+            
+            position: relative;
+            /* 3. 层级：图片在中间 (10) */
+            z-index: 10;
+            
+            /* 确保动画平滑 */
+            transition: transform 0.1s ease-out;
+        }
+        
+        /* 4. 图片点击动效 */
+        #doctor-icon.clicked {
+            transform: scale(0.95); /* 点击时缩小 */
         }
 
-        /* 点击时的缩小动画 */
-        #doctor-icon:active {
-            transform: scale(0.92);
+        /* --- 特效样式 --- */
+        .flying-message, .sparkle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0; 
+            pointer-events: none; /* 让点击可以穿透它们 */
         }
 
-        #message-text {
-            font-size: 1.8rem; /* 字体大一点 */
+        /* 5. 文字飞出效果 */
+        .flying-message {
+            font-size: 1.5rem;
             font-weight: bold;
-            color: #333;
-            margin-top: 30px;
-            height: 60px; /* 给点固定高度，防止文字换行时跳动 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            white-space: nowrap; 
+            /* 6. 层级：文字在最前面 (20) */
+            z-index: 20; 
+            animation: flyFromCenter 1.5s forwards ease-out;
+        }
+
+        @keyframes flyFromCenter {
+            0% {
+                opacity: 1;
+                transform: translate(calc(-50% + var(--x-end, 0px)), -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--x-end, 0px)), -150px) scale(1.2); 
+            }
+        }
+
+        /* 7. 我们的 "Canvas烟花" (用CSS粒子实现) */
+        .sparkle {
+            background-color: #ffd700; 
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            /* 8. 层级：烟花在图片前面 (15) */
+            z-index: 15; 
+            animation: sparkleExplode 1s forwards ease-out;
+        }
+
+        @keyframes sparkleExplode {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1); 
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--x), var(--y)) scale(0.5); 
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="gift-container">
-        <img src="./doctor.png" id="doctor-icon" alt="可爱的医生">
-        
-        <p id="message-text">点击上面的我试试？</p>
+        <img src="doctor.png" id="doctor-icon" alt="可爱的医生">
     </div>
 
     <script>
-        // JavaScript 逻辑: 实现随机文字
-        
-        // 5. 你的祝福语列表（可以随便加）
         const messages = [
             "生日快乐！🎂",
             "医生姐姐好酷！",
@@ -78,23 +120,82 @@
             "今天你最大！",
             "Happy Birthday!",
             "永远18岁！",
-            "愿望全都实现！"
+            "愿望全都实现！",
+            "超级女神！"
         ];
 
-        // 6. 获取元素
-        const doctorIcon = document.getElementById('doctor-icon');
-        const messageText = document.getElementById('message-text');
+        const colors = [
+            '#FF69B4', '#FFD700', '#ADFF2F', '#87CEEB', '#BA55D3', '#FF4500', '#32CD32', '#6A5ACD', '#FF6347'
+        ];
 
-        // 7. 绑定点击事件
-        doctorIcon.addEventListener('click', function() {
-            // 随机选择一条消息
+        const giftContainer = document.querySelector('.gift-container');
+        const doctorIcon = document.getElementById('doctor-icon');
+
+        /* 9. 移除冷却逻辑 */
+        // let isAnimating = false; (已移除)
+        // const animationDuration = 1500; (已移除)
+
+        /* 10. 全屏点击事件 */
+        document.body.addEventListener('click', function(event) {
+            
+            // if (isAnimating) { return; } (已移除)
+            // isAnimating = true; (已移除)
+
+            // 11. 触发图片点击动效
+            doctorIcon.classList.add('clicked');
+            
+            // 12. 短暂延迟后移除点击效果，实现 "弹一下" 的感觉
+            setTimeout(() => {
+                doctorIcon.classList.remove('clicked');
+            }, 100); // 100毫秒后图片恢复原状
+            
+            // --- 特效逻辑 ---
+
+            // A. 生成随机祝福文字
             const randomIndex = Math.floor(Math.random() * messages.length);
             const randomMessage = messages[randomIndex];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+            const messageElement = document.createElement('div');
+            messageElement.textContent = randomMessage;
+            messageElement.classList.add('flying-message');
+            messageElement.style.color = randomColor;
+
+            const randomXEnd = (Math.random() - 0.5) * 100;
+            messageElement.style.setProperty('--x-end', `${randomXEnd}px`);
+
+            giftContainer.appendChild(messageElement);
+
+            messageElement.addEventListener('animationend', () => {
+                messageElement.remove();
+            });
+
+            // B. 生成烟花粒子
+            for (let i = 0; i < 20; i++) { 
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+                
+                const speed = 120 + Math.random() * 40; // 扩散半径增加随机性
+                const angle = Math.random() * 2 * Math.PI;
+                const dx = speed * Math.cos(angle);
+                const dy = speed * Math.sin(angle);
+
+                sparkle.style.setProperty('--x', `${dx}px`);
+                sparkle.style.setProperty('--y', `${dy}px`);
+                sparkle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                giftContainer.appendChild(sparkle);
+
+                sparkle.addEventListener('animationend', () => {
+                    sparkle.remove();
+                });
+            }
             
-            // 将消息显示在 <p> 标签中
-            messageText.textContent = randomMessage;
+            // 13. 移除动画冷却的 setTimeout
+            // (setTimeout(() => { ... }, animationDuration); 已移除)
         });
     </script>
 
 </body>
 </html>
+
