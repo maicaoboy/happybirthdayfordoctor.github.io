@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    
+    <title>一份特别的礼物</title>
+    
+    <link rel="apple-touch-icon" href="doctor.png">
+    
+    <style>
+        /* CSS 样式: 让页面变得好看 */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #fce4ec; /* 一个温馨的粉色背景 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* 防止页面滚动 */
+        }
+
+        .gift-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        #doctor-icon {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%; /* 圆形 */
+            object-fit: cover;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            
+            /* 关键：让点击有反馈 */
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        /* 点击时的缩小动画 */
+        #doctor-icon:active {
+            transform: scale(0.92);
+        }
+
+        #message-text {
+            font-size: 1.8rem; /* 字体大一点 */
+            font-weight: bold;
+            color: #333;
+            margin-top: 30px;
+            height: 60px; /* 给点固定高度，防止文字换行时跳动 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="gift-container">
+        <img src="doctor.png" id="doctor-icon" alt="可爱的医生">
+        
+        <p id="message-text">点击上面的我试试？</p>
+    </div>
+
+    <script>
+        // JavaScript 逻辑: 实现随机文字
+        
+        // 5. 你的祝福语列表（可以随便加）
+        const messages = [
+            "生日快乐！🎂",
+            "医生姐姐好酷！",
+            "天天开心！",
+            "你是最棒的！",
+            "工作辛苦啦！",
+            "今天你最大！",
+            "Happy Birthday!",
+            "永远18岁！",
+            "愿望全都实现！"
+        ];
+
+        // 6. 获取元素
+        const doctorIcon = document.getElementById('doctor-icon');
+        const messageText = document.getElementById('message-text');
+
+        // 7. 绑定点击事件
+        doctorIcon.addEventListener('click', function() {
+            // 随机选择一条消息
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            const randomMessage = messages[randomIndex];
+            
+            // 将消息显示在 <p> 标签中
+            messageText.textContent = randomMessage;
+        });
+    </script>
+
+</body>
+</html>
